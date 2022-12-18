@@ -1,4 +1,7 @@
-from automation.downloader import Downloader
+from automation import Downloader, Extractor
+import os
 
-
-d = Downloader().run_wget()
+if __name__ == '__main__':
+    os.mkdir("data")
+    Downloader.run_wget()
+    Extractor.execute_extraction()

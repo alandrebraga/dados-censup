@@ -3,15 +3,14 @@ import os
 
 class Downloader:
 
-    def __init__(self):
-        dirname = os.path.dirname(__file__)
-        self._filename = os.path.join(dirname, 'zipfiles')
-        self._command = f'wget --no-check -P {self._filename} -i downloader/urls.txt'
+    dirname = os.path.dirname(__file__)
+    _filename = os.path.join(dirname, 'zipfiles')
+    _command = f'wget --no-check -P {_filename} -i urls.txt'
 
-    def run_wget(self):
-        print(self._command)
+    @classmethod
+    def run_wget(cls) -> None:
         process = subprocess.Popen(
-            self._command,
+            cls._command,
             stdout = subprocess.PIPE,
             stderr = subprocess.PIPE,
             text = True,
