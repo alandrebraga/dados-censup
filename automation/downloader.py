@@ -18,3 +18,9 @@ class Downloader:
         )
         std_out, std_err = process.communicate()
         print(std_out.strip(), std_err)
+
+    @classmethod
+    def delete_files() -> None:
+        os.remove('automation/zipfiles')
+        os.remove('/automation/extracted-files')
+        os.remove('data')

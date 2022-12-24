@@ -43,7 +43,6 @@ class Extractor:
                     if file.endswith('.CSV'):
                         original_path = os.getcwd()
                         shutil.move(f'{original_path}/{file}', f'../../../../data/{file}')
-        print(os.path.exists('data'))
 
     @staticmethod
     def execute_extraction():

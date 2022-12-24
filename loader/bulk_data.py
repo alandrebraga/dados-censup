@@ -11,8 +11,6 @@ replacements = {
 }
 
 def concat_dfs(csv_files: list) -> None:
-    print(os.getcwd())
-
     df_cursos = []
     df_ies = []
 
