@@ -24,3 +24,4 @@ if __name__ == '__main__':
 
     csv_files = find_csv_files("data")
     bulk_data.load(csv_files)
+    Downloader.delete_files()

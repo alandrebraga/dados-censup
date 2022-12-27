@@ -17,20 +17,40 @@ def concat_dfs(csv_files: list) -> None:
     for file in csv_files:
         try:
             if "CURSOS" in file:
-                df_cursos.append(pd.read_csv(f'data/{file}', sep=';'))
+                df_cursos.append(pd.read_csv(f'data/{file}', sep=';', low_memory=False))
             else:
-                df_ies.append(pd.read_csv(f'data/{file}', sep=';'))
+                df_ies.append(pd.read_csv(f'data/{file}', sep=';', low_memory=False))
         except UnicodeDecodeError:
             if "CURSOS" in file:
-                df_cursos.append(pd.read_csv(f'data/{file}', sep=';', encoding='ISO-8859-1'))
+                df_cursos.append(pd.read_csv(f'data/{file}', sep=';', encoding='ISO-8859-1', low_memory=False))
             else:
-                df_ies.append(pd.read_csv(f'data/{file}', sep=';', encoding='ISO-8859-1'))
+                df_ies.append(pd.read_csv(f'data/{file}', sep=';', encoding='ISO-8859-1', low_memory=False))
 
     cursos = pd.concat(df_cursos)
     ies = pd.concat(df_ies)
-
+    ies = ies.drop_duplicates(subset='CO_IES')
     cursos.to_csv("data/cursos.csv", header=cursos.columns, index=False, encoding='utf-8')
     ies.to_csv("data/instituicoes.csv", header=ies.columns, index=False, encoding='utf-8')
+
+def add_references_key() -> None:
+    conn = psycopg2.connect(**config())
+    cursor = conn.cursor()
+
+    ADD_KEY_ON_CURSOS = """
+            ALTER TABLE cursos
+            ADD CONSTRAINT co_ies
+            FOREIGN KEY (co_ies)
+            REFERENCES instituicoes(co_ies);
+    """
+    ADD_KEY_ON_IES = """
+            ALTER TABLE instituicoes
+            ADD PRIMARY KEY(co_ies)
+    """
+
+    cursor.execute(ADD_KEY_ON_IES)
+    cursor.execute(ADD_KEY_ON_CURSOS)
+    conn.commit()
+    conn.close()
 
 def load_data(file_path: str) -> None:
     tbl_name = ""
@@ -38,7 +58,7 @@ def load_data(file_path: str) -> None:
         tbl_name = "cursos"
     else:
         tbl_name = "instituicoes"
-    df = pd.read_csv(f'data/{tbl_name}.csv')
+    df = pd.read_csv(f'data/{tbl_name}.csv', low_memory=False)
     my_file = open(f"data/{tbl_name}.csv")
 
     col_str = ",  ".join("{} {}".format(n, d)
@@ -50,6 +70,7 @@ def load_data(file_path: str) -> None:
     cursor.execute("drop table if exists %s" % (tbl_name))
 
     cursor.execute("create table %s (%s);" % (tbl_name, col_str))
+
 
     COPY_STATEMENT = """
     COPY %s FROM STDIN WITH
@@ -64,8 +85,9 @@ def load_data(file_path: str) -> None:
 
 def load(file_list: list):
     concat_dfs(file_list)
-    file_paths = ["data/cursos.csv", "data/instituicoes.csv"]
+    file_paths = ["data/cursos.csv","data/instituicoes.csv",]
     for path in file_paths:
         load_data(path)
+    add_references_key()
 
 

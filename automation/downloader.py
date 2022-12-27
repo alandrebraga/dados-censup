@@ -1,5 +1,6 @@
 import subprocess
 import os
+import shutil
 
 class Downloader:
 
@@ -19,8 +20,15 @@ class Downloader:
         std_out, std_err = process.communicate()
         print(std_out.strip(), std_err)
 
+    @staticmethod
+    def folder_exist(file_path: str) -> bool:
+        return os.path.isdir(file_path)
+
     @classmethod
-    def delete_files() -> None:
-        os.remove('automation/zipfiles')
-        os.remove('/automation/extracted-files')
-        os.remove('data')
+    def delete_files(cls) -> None:
+        if cls.folder_exist('automation/zipfiles'):
+            shutil.rmtree('automation/zipfiles')
+        if cls.folder_exist('automation/extracted-files'):
+            shutil.rmtree('automation/extracted-files')
+        if cls.folder_exist('data'):
+            shutil.rmtree('data')
