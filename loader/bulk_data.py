@@ -29,6 +29,7 @@ def concat_dfs(csv_files: list) -> None:
     cursos = pd.concat(df_cursos)
     ies = pd.concat(df_ies)
     ies = ies.drop_duplicates(subset='CO_IES')
+    ies.drop(['NU_ANO_CENSO'], axis=1, inplace=True)
     cursos.to_csv("data/cursos.csv", header=cursos.columns, index=False, encoding='utf-8')
     ies.to_csv("data/instituicoes.csv", header=ies.columns, index=False, encoding='utf-8')
 
@@ -59,7 +60,7 @@ def load_data(file_path: str) -> None:
     else:
         tbl_name = "instituicoes"
     df = pd.read_csv(f'data/{tbl_name}.csv', low_memory=False)
-    my_file = open(f"data/{tbl_name}.csv")
+    my_file = open(f"data/{tbl_name}.csv", encoding='utf-8')
 
     col_str = ",  ".join("{} {}".format(n, d)
         for (n,d) in zip (df.columns, df.dtypes.replace(replacements)))

@@ -16,12 +16,14 @@ if __name__ == '__main__':
     except FileExistsError:
         pass
 
-    Downloader.run_wget()
-    Extractor.execute_extraction()
+    try:
+        Downloader.run_wget()
+        Extractor.execute_extraction()
 
-    root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
-    os.chdir(root_dir)
+        root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
+        os.chdir(root_dir)
 
-    csv_files = find_csv_files("data")
-    bulk_data.load(csv_files)
-    Downloader.delete_files()
+        csv_files = find_csv_files("data")
+        bulk_data.load(csv_files)
+    finally:
+        Downloader.delete_files()
