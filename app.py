@@ -1,8 +1,10 @@
-from automation import Downloader, Extractor
+from automation import Downloader
 from loader import bulk_data
 import os
+import shutil
 
-def find_csv_files(path_to_dir, suffix='CSV') -> list:
+
+def find_csv_files(path_to_dir, suffix="CSV") -> list:
     if not os.path.exists(path_to_dir):
         raise Exception(f"A pasta {path_to_dir} nao existe")
 
@@ -10,20 +12,16 @@ def find_csv_files(path_to_dir, suffix='CSV') -> list:
     csv_files = [filename for filename in filenames if filename.endswith(suffix)]
     return csv_files
 
-if __name__ == '__main__':
+
+def delete_files():
+    shutil.rmtree("data")
+    shutil.rmtree("extracted-files")
+
+
+if __name__ == "__main__":
     try:
-        os.mkdir("data")
-    except FileExistsError:
-        pass
-
-    try:
-        Downloader.run_wget()
-        Extractor.execute_extraction()
-
-        root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
-        os.chdir(root_dir)
-
+        Downloader.download_files()
         csv_files = find_csv_files("data")
         bulk_data.load(csv_files)
     finally:
-        Downloader.delete_files()
+        delete_files()
