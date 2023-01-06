@@ -1,34 +1,37 @@
-import subprocess
 import os
+import requests
+from io import BytesIO
+import zipfile
+import glob
 import shutil
+
 
 class Downloader:
 
     dirname = os.path.dirname(__file__)
-    _filename = os.path.join(dirname, 'zipfiles')
-    _command = f'wget --no-check -P {_filename} -i urls.txt'
-
-    @classmethod
-    def run_wget(cls) -> None:
-        process = subprocess.Popen(
-            cls._command,
-            stdout = subprocess.PIPE,
-            stderr = subprocess.PIPE,
-            text = True,
-            shell = True
-        )
-        std_out, std_err = process.communicate()
-        print(std_out.strip(), std_err)
 
     @staticmethod
-    def folder_exist(file_path: str) -> bool:
-        return os.path.isdir(file_path)
+    def _get_urls() -> list:
+        urls = []
+        with open("urls.txt", "r") as f:
+            urls = [line.strip() for line in f]
+        return urls
+
+    @staticmethod
+    def _move_csv_to_data():
+        for dirpath, _, files in os.walk("extracted-files"):
+            for file in files:
+                if file.endswith(".CSV"):
+                    shutil.copy(f"{dirpath}/{file}", "data")
 
     @classmethod
-    def delete_files(cls) -> None:
-        if cls.folder_exist('automation/zipfiles'):
-            shutil.rmtree('automation/zipfiles')
-        if cls.folder_exist('automation/extracted-files'):
-            shutil.rmtree('automation/extracted-files')
-        if cls.folder_exist('data'):
-            shutil.rmtree('data')
+    def download_files(cls) -> None:
+        try:
+            os.makedirs("extracted-files", exist_ok=True)
+            os.makedirs("data", exist_ok=True)
+        except OSError as e:
+            print(f"Directory can not be created, error - {e}")
+        for url in cls._get_urls():
+            filebytes = BytesIO(requests.get(url, verify=False).content)
+            zipfile.ZipFile(filebytes).extractall("extracted-files")
+        cls._move_csv_to_data()
