@@ -2,8 +2,10 @@ import os
 import requests
 from io import BytesIO
 import zipfile
-import glob
 import shutil
+import urllib3
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 class Downloader:
