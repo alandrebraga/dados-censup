@@ -1,6 +1,6 @@
 # Censosup Dados
 
-Esse projeto foi criado visando automatizar o processo de download e ingestão dos dados disponibilizados pelo inep.
+Esse projeto foi criado visando automatizar o processo de download e ingestão dos dados disponibilizados pelo inep, de forma simples utilizando pandas.
 
 ## O que este projeto faz?
 
@@ -34,12 +34,18 @@ Como o ER ficou bem grande por conta da quantidade de colunas vou descrever a mo
 # To-Do
 
 - Adicionar testes para os dados (preciso estudar sobre como validar os dados com testes)
-- Refatorar alguns blocos de códigos que estão um pouco confusos (melhorar a lógica do projeto como um todo)
 - Extender o projeto a outros banco de dados como mySQL, SQLite e posteriormente a bancos noSQL.
+
+
+# Tempo de execução
+O tempo de execucão vai variar de acordo com a conexão da internet já que ele vai baixar os arquivos.
+Na parte do código o processo que mais demora é uma operacão de concatenacão de dataframes que pode levar de 50s a 1m30s.
+Testei utilizar spark para testar a velocidade e caiu de 50s a 30s para esta operacão, todavia, não acho que valha o tradeoff principalmente na parte de rodar este projeto em outros ambientes, já que a ideia é mante-lo simples e como é um processo que roda-se a cada ano praticamente, não tem vejo necessidade nesta alteracão.
 
 
 # Como contrbuir
 1. Clone o repositório e cri auma branch nova
 2. Faça a mudança e teste
 3. Envie um PR com a descricão das mudanças
+
 contato: https://www.linkedin.com/in/andrelbmallmann/
