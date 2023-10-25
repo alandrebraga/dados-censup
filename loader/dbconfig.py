@@ -10,4 +10,4 @@ def config(filename='database.ini', section='postgresql'):
             db[param[0]] = param[1]
     else:
         raise Exception("Section not found in file")
-    return db;
+    return db
