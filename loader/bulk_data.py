@@ -4,7 +4,7 @@ from loader.dbconfig import config
 import psycopg2
 
 
-replacements = {"object": "varchar", "float64": "float", "int64": "int"}
+replacements = {"object": "varchar", "float64": "decimal", "int64": "int"}
 
 
 def concat_dfs(csv_files: list) -> None:
@@ -33,8 +33,6 @@ def concat_dfs(csv_files: list) -> None:
 
     cursos = pd.concat(df_cursos)
     ies = pd.concat(df_ies)
-    ies = ies.drop_duplicates(subset="CO_IES")
-    ies.drop(["NU_ANO_CENSO"], axis=1, inplace=True)
     cursos.to_csv(
         "data/cursos.csv", header=cursos.columns, index=False, encoding="utf-8"
     )
@@ -42,35 +40,13 @@ def concat_dfs(csv_files: list) -> None:
         "data/instituicoes.csv", header=ies.columns, index=False, encoding="utf-8"
     )
 
-
-def add_references_key() -> None:
-    conn = psycopg2.connect(**config())
-    cursor = conn.cursor()
-
-    ADD_KEY_ON_CURSOS = """
-            ALTER TABLE cursos
-            ADD CONSTRAINT co_ies
-            FOREIGN KEY (co_ies)
-            REFERENCES instituicoes(co_ies);
-    """
-    ADD_KEY_ON_IES = """
-            ALTER TABLE instituicoes
-            ADD PRIMARY KEY(co_ies)
-    """
-
-    cursor.execute(ADD_KEY_ON_IES)
-    cursor.execute(ADD_KEY_ON_CURSOS)
-    conn.commit()
-    conn.close()
-
-
 def load_data(file_path: str) -> None:
     tbl_name = ""
     if "cursos" in file_path:
         tbl_name = "cursos"
     else:
         tbl_name = "instituicoes"
-    df = pd.read_csv(f"data/{tbl_name}.csv", low_memory=False)
+    df = pd.read_csv(f"data/{tbl_name}.csv")
     my_file = open(f"data/{tbl_name}.csv", encoding="utf-8")
 
     col_str = ",  ".join(
@@ -84,6 +60,8 @@ def load_data(file_path: str) -> None:
     cursor.execute("drop table if exists %s" % (tbl_name))
 
     cursor.execute("create table %s (%s);" % (tbl_name, col_str))
+
+    print("create table %s (%s);" % (tbl_name, col_str))
 
     COPY_STATEMENT = """
     COPY %s FROM STDIN WITH
@@ -105,4 +83,3 @@ def load(file_list: list):
     ]
     for path in file_paths:
         load_data(path)
-    add_references_key()
