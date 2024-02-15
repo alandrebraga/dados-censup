@@ -27,7 +27,7 @@ Não, são feitos alguns ajustes necessários para não ter erro de encoding na 
 
 # Tabela no banco de dados
 Modelagem:
-Como o ER ficou bem grande por conta da quantidade de colunas vou descrever a modelacodesnapgem. Temos tabelas de instituições de ensino e de cursos, na tabela de instituições temos a chave primaria pelo código da universidade, essa chave primeira é usada de chave estrangeira na tabela de cursos.
+Como o ER ficou bem grande por conta da quantidade de colunas vou descrever a modelagem. Temos tabelas de instituições de ensino e de cursos, na tabela de instituições temos a chave primaria pelo código da universidade, essa chave primeira é usada de chave estrangeira na tabela de cursos.
 
 ## Exemplo de consulta dos dados
 ![sql example](/img/sql_example.png)
